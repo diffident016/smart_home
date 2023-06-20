@@ -1,48 +1,54 @@
-import 'dart:convert';
+import 'dart:async';
 
-import 'package:alan_voice/alan_voice.dart';
 import 'package:flutter/material.dart';
+import 'package:text_to_speech/text_to_speech.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:wokwi_talkie/components/utils.dart';
 import 'package:wokwi_talkie/constant.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:wokwi_talkie/models/fans.dart';
+import 'package:wokwi_talkie/models/lights.dart';
+import 'package:wokwi_talkie/models/sockets.dart';
 
 import '../components/back_button.dart';
 
 class VoiceAssistant extends StatefulWidget {
-  const VoiceAssistant({Key? key, required this.selectScreen})
+  const VoiceAssistant(
+      {Key? key,
+      required this.selectScreen,
+      required this.updateLights,
+      required this.updateFans,
+      required this.updateSocket,
+      required this.lights,
+      required this.fans,
+      required this.sockets})
       : super(key: key);
 
   final Function(int) selectScreen;
+  final VoidCallback updateSocket;
+  final VoidCallback updateLights;
+  final VoidCallback updateFans;
+  final Lights lights;
+  final Fans fans;
+  final Sockets sockets;
+
   @override
   _VoiceAssistantState createState() => _VoiceAssistantState();
 }
 
 class _VoiceAssistantState extends State<VoiceAssistant> {
   final speechToText = SpeechToText();
+  // final flutterTts = FlutterTts();
   String lastWords = '';
-
-  _VoiceAssistantState() {
-    AlanVoice.addButton(
-        "3483fcb8ac1b2eb5978e1106e78d7c512e956eca572e1d8b807a3e2338fdd0dc/stage");
-
-    AlanVoice.onCommand.add((command) {
-      debugPrint("got new command ${command.toString()}");
-    });
-  }
+  TextToSpeech tts = TextToSpeech();
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
     initSpeechToText();
-  }
 
-  Future<void> sendData() async {
-    var isActive = await AlanVoice.isActive();
-    if (!isActive) {
-      AlanVoice.activate();
-    }
-    var params = jsonEncode({"count": 32});
-    AlanVoice.callProjectApi("script::getCount", params);
+    _timer = Timer(const Duration(seconds: 0), () {});
   }
 
   Future<void> initSpeechToText() async {
@@ -50,9 +56,16 @@ class _VoiceAssistantState extends State<VoiceAssistant> {
     setState(() {});
   }
 
+  // Future<void> initTextToSpeech() async {
+  //   await flutterTts.setSharedInstance(true);
+  //   setState(() {});
+  // }
+
   Future<void> startListening() async {
     await speechToText.listen(onResult: onSpeechResult);
-    setState(() {});
+    setState(() {
+      lastWords = 'Listening...';
+    });
   }
 
   Future<void> stopListening() async {
@@ -61,10 +74,28 @@ class _VoiceAssistantState extends State<VoiceAssistant> {
     setState(() {});
   }
 
+  Future<void> systemSpeak(String content) async {
+    tts.speak(content);
+
+    _timer = Timer(const Duration(seconds: 4), () {
+      setState(() {
+        lastWords = '';
+      });
+    });
+  }
+
   void onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
       lastWords = result.recognizedWords;
     });
+
+    if (speechToText.isNotListening) {
+      int command = Utils.readCommand(lastWords);
+      String feedback = Utils.feedback(command);
+
+      _response(Utils.response(command));
+      systemSpeak(feedback);
+    }
   }
 
   void _listen() async {
@@ -77,10 +108,29 @@ class _VoiceAssistantState extends State<VoiceAssistant> {
     }
   }
 
+  void _response(List<int> res) {
+    print(res);
+    setState(() {
+      if (res.isNotEmpty) {
+        if (res[0] == 0) {
+          widget.lights.lights[res[1]] = res[2] == 1 ? true : false;
+          widget.updateLights();
+        } else if (res[0] == 1) {
+          widget.fans.fans[res[1]] = res[2] == 1 ? true : false;
+          widget.updateFans();
+        } else if (res[0] == 2) {
+          widget.sockets.sockets[res[2]] = res[1] == 1 ? true : false;
+          widget.updateSocket();
+        }
+      }
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
     speechToText.stop();
+    _timer.cancel();
   }
 
   @override
@@ -94,7 +144,7 @@ class _VoiceAssistantState extends State<VoiceAssistant> {
           ),
           CBackButton(
             onTap: (() {
-              widget.selectScreen(1);
+              widget.selectScreen(0);
             }),
           ),
           Expanded(
@@ -111,12 +161,16 @@ class _VoiceAssistantState extends State<VoiceAssistant> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 25),
                 child: Text(
-                  lastWords.isEmpty ? 'Tap to speak...' : lastWords,
+                  speechToText.isListening
+                      ? "Listening..."
+                      : lastWords.isEmpty
+                          ? 'Tap to speak...'
+                          : lastWords,
                   style:
                       const TextStyle(fontSize: 20, color: Color(0xFF5C5C5C)),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 40,
               )
             ],

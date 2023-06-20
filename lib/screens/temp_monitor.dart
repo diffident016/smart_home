@@ -1,7 +1,3 @@
-import 'dart:async';
-
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'package:wokwi_talkie/components/back_button.dart';
@@ -34,7 +30,7 @@ class _TempMonitorState extends State<TempMonitor>
           ),
           CBackButton(
             onTap: (() {
-              widget.selectScreen(1);
+              widget.selectScreen(0);
             }),
           ),
           const Padding(
@@ -86,7 +82,7 @@ class _TempMonitorState extends State<TempMonitor>
                         child: Container(
                             margin: const EdgeInsets.only(top: 60),
                             child: Text(
-                              '${(widget.temp.temperature * 100).round().toString()}\u00B0C',
+                              '${(widget.temp.temperature).round().toString()}\u00B0C',
                               style: const TextStyle(
                                   fontFamily: 'Rubik',
                                   fontSize: 36,
@@ -130,8 +126,8 @@ class _TempMonitorState extends State<TempMonitor>
                           width: double.infinity,
                           height: 200,
                           child: CustomPaint(
-                              painter:
-                                  CustomGauge(value: widget.temp.humidity))),
+                              painter: CustomGauge(
+                                  value: (widget.temp.humidity).toDouble()))),
                       const Align(
                         alignment: Alignment.center,
                         child: SizedBox(
@@ -149,7 +145,7 @@ class _TempMonitorState extends State<TempMonitor>
                         child: Container(
                             margin: const EdgeInsets.only(top: 60),
                             child: Text(
-                              '${(widget.temp.humidity * 100).round().toString()}%',
+                              '${(widget.temp.humidity).round().toString()}%',
                               style: const TextStyle(
                                   fontFamily: 'Rubik',
                                   fontSize: 36,

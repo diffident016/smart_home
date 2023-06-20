@@ -38,7 +38,7 @@ class _RoomsState extends State<Rooms> {
         ),
         CBackButton(
           onTap: (() {
-            widget.selectScreen(1);
+            widget.selectScreen(0);
           }),
         ),
         const Padding(
@@ -49,37 +49,42 @@ class _RoomsState extends State<Rooms> {
                 fontFamily: 'Rubik', fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ),
-        ListView.builder(
-            itemCount: rooms.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 7.5),
-                child: RoomControl(
-                  calls: [
-                    (val) {
-                      setState(() {
-                        widget.lights.lights[index] = val;
-                        widget.setLights();
-                      });
-                    },
-                    (val) {
-                      setState(() {
-                        widget.fans.fans[index] = val;
-                        widget.setFans();
-                      });
-                    }
-                  ],
-                  label: rooms[index]['room'],
-                  icon: rooms[index]['m-icon'],
-                  switches: [
-                    widget.lights.lights[index],
-                    widget.fans.fans[index]
-                  ],
-                ),
-              );
-            }),
+        SingleChildScrollView(
+          child: SizedBox(
+            height: 550,
+            child: ListView.builder(
+                itemCount: rooms.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 7.5),
+                    child: RoomControl(
+                      calls: [
+                        (val) {
+                          setState(() {
+                            widget.lights.lights[index] = val;
+                            widget.setLights();
+                          });
+                        },
+                        (val) {
+                          setState(() {
+                            widget.fans.fans[index] = val;
+                            widget.setFans();
+                          });
+                        }
+                      ],
+                      label: rooms[index]['room'],
+                      icon: rooms[index]['m-icon'],
+                      switches: [
+                        widget.lights.lights[index],
+                        widget.fans.fans[index]
+                      ],
+                    ),
+                  );
+                }),
+          ),
+        ),
       ])),
     );
   }

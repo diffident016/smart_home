@@ -31,7 +31,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int currentIndex = 1;
+  int currentIndex = 0;
 
   final refDataInstance = FirebaseDatabase.instance.ref('smart_home');
 
@@ -106,13 +106,12 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
         backgroundColor: bgColor,
         body: IndexedStack(index: currentIndex, children: [
-          Settings(),
           Homepage(
             selectScreen: selectScreen,
             lights: lights,
             setLights: updateLights,
           ),
-          Notifications(),
+          Settings(),
           LightsDevices(
             selectScreen: selectScreen,
             lights: lights,
@@ -139,22 +138,29 @@ class _MainScreenState extends State<MainScreen> {
             setLights: updateLights,
             setFans: updateFans,
           ),
-          VoiceAssistant(selectScreen: selectScreen)
+          VoiceAssistant(
+            selectScreen: selectScreen,
+            updateLights: updateLights,
+            updateFans: updateFans,
+            updateSocket: updateSockets,
+            lights: lights,
+            fans: fans,
+            sockets: sockets,
+          )
         ]),
         bottomNavigationBar: CurvedNavigationBar(
           color: Colors.white,
           backgroundColor: bgColor,
           buttonBackgroundColor: Colors.transparent,
           height: 55,
-          index: currentIndex > 2 ? 1 : currentIndex,
+          index: currentIndex > 1 ? 0 : currentIndex,
           onTap: (index) {
             FocusManager.instance.primaryFocus?.unfocus();
             selectScreen(index);
           },
           items: const [
-            Icon(FontAwesomeIcons.gear),
             Icon(FontAwesomeIcons.house),
-            Icon(FontAwesomeIcons.list)
+            Icon(FontAwesomeIcons.gear),
           ],
         ));
   }

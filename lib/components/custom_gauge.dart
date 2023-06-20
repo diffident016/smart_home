@@ -39,7 +39,7 @@ class CustomGauge extends CustomPainter {
     canvas.drawArc(
       Rect.fromCenter(center: center, width: 170, height: 170),
       vmath.radians(180),
-      vmath.radians(180 * value),
+      vmath.radians((180 * value) / 100),
       false,
       Paint()
         ..style = PaintingStyle.stroke

@@ -35,7 +35,7 @@ class _AlarmsDeviceState extends State<AlarmsDevice> {
           ),
           CBackButton(
             onTap: (() {
-              widget.selectScreen(1);
+              widget.selectScreen(0);
             }),
           ),
           const Padding(

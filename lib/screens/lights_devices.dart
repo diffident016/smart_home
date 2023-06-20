@@ -39,7 +39,7 @@ class _LightsDevicesState extends State<LightsDevices> {
           ),
           CBackButton(
             onTap: (() {
-              widget.selectScreen(1);
+              widget.selectScreen(0);
             }),
           ),
           const Padding(

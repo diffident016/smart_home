@@ -98,11 +98,11 @@ class _HomepageState extends State<Homepage> {
                         _buildDevices(
                             size, 'Lights', FontAwesomeIcons.solidLightbulb,
                             () {
-                          widget.selectScreen(3);
+                          widget.selectScreen(2);
                         }),
                         _buildDevices(size, 'Sockets', FontAwesomeIcons.plug,
                             () {
-                          widget.selectScreen(4);
+                          widget.selectScreen(3);
                         })
                       ],
                     ),
@@ -117,11 +117,11 @@ class _HomepageState extends State<Homepage> {
                       children: <Widget>[
                         _buildDevices(
                             size, 'Alarms', FontAwesomeIcons.solidBell, () {
-                          widget.selectScreen(5);
+                          widget.selectScreen(4);
                         }),
                         _buildDevices(size, 'Temperature',
                             FontAwesomeIcons.temperatureFull, () {
-                          widget.selectScreen(6);
+                          widget.selectScreen(5);
                         })
                       ],
                     ),
@@ -137,7 +137,7 @@ class _HomepageState extends State<Homepage> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            widget.selectScreen(7);
+                            widget.selectScreen(6);
                           },
                           child: const Text(
                             'See all',
@@ -173,7 +173,7 @@ class _HomepageState extends State<Homepage> {
                     child: Center(
                       child: GestureDetector(
                         onTap: () {
-                          widget.selectScreen(8);
+                          widget.selectScreen(7);
                         },
                         child: Material(
                           elevation: 2,

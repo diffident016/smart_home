@@ -34,7 +34,7 @@ class _SocketDevicesState extends State<SocketDevices> {
           ),
           CBackButton(
             onTap: (() {
-              widget.selectScreen(1);
+              widget.selectScreen(0);
             }),
           ),
           const Padding(
